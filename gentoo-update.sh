@@ -11,6 +11,19 @@ function clean() {
 	eclean-kernel -n 3 || return 1
 }
 
+function update_kernel() {
+	[ "$(eselect --brief kernel list)" = "$(uname -s -r | tr '[A-Z]' '[a-z]' | tr ' ' '-')" ] && return 0
+	# We suppose symlink USE is enabled
+	cd /usr/src/linux || return 1
+	cp ../linux-$(uname -r)/.config . || return 1
+
+	# TODO: Detect initramfs-type¿?
+	# TODO: Allow for different genkernel options ¿?
+	genkernel --no-splash --install --oldconfig --no-xconfig --no-gconfig --no-nconfig --no-menuconfig --bootloader= --compress-initramfs-type=xz all || return 1
+
+	grub-mkconfig -o /boot/grub/grub.cfg || return 1
+}
+
 function send() {
 	ntfy -b telegram send "$(hostname): $1"
 }
@@ -22,6 +35,11 @@ fi
 
 if ! clean; then
 	send "Clean FAILED"
+	exit
+fi
+
+if ! update_kernel; then
+	send "Kernel update FAILED"
 	exit
 fi
 
