@@ -21,7 +21,7 @@ function update_kernel() {
 	# TODO: Allow for different genkernel options ¿?
 	genkernel --no-splash --install --oldconfig --no-xconfig --no-gconfig --no-nconfig --no-menuconfig --bootloader= --compress-initramfs-type=xz all || return 1
 
-	grub-mkconfig -o /boot/grub/grub.cfg || return 1
+	/usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg || return 1
 }
 
 function send() {
