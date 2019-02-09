@@ -8,7 +8,9 @@ function update() {
 
 function clean() {
 	emerge -qc || return 1
-	stat /lib/modules &> /dev/null && eclean-kernel -n 3 || return 1
+   if stat /lib/modules &> /dev/null; then
+     eclean-kernel -n 3 || return 1
+   fi
 }
 
 function update_kernel() {
